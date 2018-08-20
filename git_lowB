@@ -1,0 +1,71 @@
+import requests
+from bs4 import BeautifulSoup
+from lxml import etree
+
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.80 Safari/537.36'
+}
+def github(domain):#输入项目详情链接,输出[Watchs,Stars,Forks,issues,Contributors,Opens,Closes,adds,dels]
+    Watchs= Stars= Forks= issues=Contributors= Opens= Closes= adds= dels='none'
+    issue_page = domain + "/issues"
+    insights_page = domain + "/pulse/monthly"
+    try:
+        Code = BeautifulSoup(requests.get(domain,headers=headers,timeout=20).content,'lxml')
+        issue = BeautifulSoup(requests.get(issue_page,headers=headers,timeout=20).content,'lxml')
+        insights = BeautifulSoup(requests.get(insights_page, headers=headers,timeout=20).content, 'lxml')
+        b1=Code.find_all('a',class_ = 'social-count')
+        Watchs = b1[0].text.replace("\n","").replace(" ","")
+        Stars = b1[1].text.replace("\n","").replace(" ","")
+        Forks = b1[2].text.replace("\n","").replace(" ","")
+        counts=Code.find_all('span',class_='Counter')
+        issues=counts[0].text.replace("\n","").replace(" ","")
+        nums = Code.find_all('span',class_='num text-emphasized')
+        if nums:
+            Contributors = nums[3].text.replace("\n","").replace(" ","")
+        items = issue.find_all('a',class_='btn-link')
+        if items:
+            Opens = items[0].text.replace("\n", "").replace(" ", "").replace("Open","")
+            Closes = items[1].text.replace("\n", "").replace(" ", "").replace("Closed","")
+        if insights.find('strong',class_='insertions'):
+            adds =insights.find('strong',class_='insertions').text
+        if insights.find('strong',class_='deletions'):
+            dels =insights.find('strong',class_='deletions').text
+        return [Watchs,Stars,Forks,issues,Contributors,Opens,Closes,adds,dels]
+    except Exception as e:
+        print("Error",e)
+        return
+
+print((github('https://github.com/Ankr-network/bitcoin')))
+
+
+f=open('/Users/seven.d/PycharmProjects/pc_icorating/pc_icorating/spiders/urls.csv','r')
+r=open("newresults.csv",'w')
+homepage='https://github.com'
+urls_list=f.readlines()
+urls=[]
+resoults={}
+for info in urls_list:
+    ico_git=info.split(",")[1].replace("\n","")
+    ico_name=info.split(",")[0]
+    if ico_git:
+        if ico_git.count("/") > 3:
+            ico_git=ico_git[:(ico_git[19:].find('/')+19)]
+        git=requests.get(ico_git,headers=headers).content
+        tree=etree.HTML(git)
+        links=tree.xpath('//li/div/h3/a//@href')
+        if not links:
+            links = tree.xpath('//li/span/span/a//@href')
+        links=list(map(lambda i:homepage+i,links))
+        resoults[ico_name]=links
+        for link in links:
+            r.write(ico_name)
+            r.write(",%s,"%(link))
+            print(type(link))
+            print(link)
+            git_info=github(link)
+            print(git_info)
+            r.write(str(git_info).replace("[","").replace("]",""))
+            r.write('\n')
+            r.flush()
+f.close()
+r.close()
