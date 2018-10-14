@@ -16,8 +16,8 @@ NEWSPIDER_MODULE = 'ourfirstscraper.spiders'
 
 
 #Export as CSV Feed
-FEED_FORMAT = "csv"
-FEED_URI = "githubbot.csv"
+# FEED_FORMAT = "csv"
+# FEED_URI = "githubbot.csv"
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'ourfirstscraper (+http://www.yourdomain.com)'
@@ -43,10 +43,10 @@ ROBOTSTXT_OBEY = False
 #TELNETCONSOLE_ENABLED = False
 
 # Override the default request headers:
-#DEFAULT_REQUEST_HEADERS = {
-#   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-#   'Accept-Language': 'en',
-#}
+DEFAULT_REQUEST_HEADERS = {
+  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+  'Accept-Language': 'zh_cn',
+}
 
 # Enable or disable spider middlewares
 # See https://doc.scrapy.org/en/latest/topics/spider-middleware.html
