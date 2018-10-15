@@ -14,14 +14,16 @@ class MytokenBaseInfoSpider(scrapy.Spider):
     global domain
     domain = start_urls[0]
 
+    global AAA
 
     def parse(self, response):
+        global AAA
         Name = ""
-        Type = ""
-        Desc = ""
-        DependOn = ""
-        OnboardTime = ""
-        consesus = ""
+        ICOTIME = ""
+        RATE = ""
+        ACCEPT = ""
+        DISTRIBUTION = ""
+        TOTALCAPITAL = ""
 
         Name = response.css('h2.name::text').extract()
 
@@ -32,28 +34,36 @@ class MytokenBaseInfoSpider(scrapy.Spider):
         labels = response.css('div.label::text')
         values = response.css('div.value::text')
 
-        print "------------------------------------------------------------------你好，世界" + values[0].extract()
+        # print "------------------------------------------------------------------你好，世界" + labels.extract()
         # Desc = labels[0].extract()
         for index, label in enumerate(labels):
             labelStr = label.extract()
-            valueStr = values[index].extract()
+            valueStr = values.extract()[index]
             print labelStr + "------" + valueStr
-            if labelStr == "基础链":
-                DependOn = valueStr
+            if labelStr == "时间":
+                ICOTIME = valueStr
 
-            if labelStr == "共识机制":
-                consesus = valueStr
+            if labelStr == "兑换比例":
+                RATE = valueStr
 
-            if labelStr == "项目启动日期":
-                OnboardTime = valueStr
+            if labelStr == "接受币种":
+                ACCEPT = valueStr
+
+            if labelStr == "代币分配":
+                DISTRIBUTION = valueStr
+
+            if labelStr == "筹集资金量":
+                TOTALCAPITAL = valueStr
+
+        AAA = values.extract()
 
         scraped_info = {
             'Name': Name,
-            'Type': Type,
-            'Desc': Desc,
-            'BaseOn': DependOn,
-            'Consesus': consesus,
-            'OnboardTime': OnboardTime,
+            'ICOTIME': AAA,
+            'RATE': RATE,
+            'ACCEPT': ACCEPT,
+            'DISTRIBUTION': DISTRIBUTION,
+            'TOTALCAPITAL': TOTALCAPITAL,
 
         }
 
