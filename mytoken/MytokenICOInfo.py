@@ -38,8 +38,8 @@ class MytokenBaseInfoSpider(scrapy.Spider):
         print labels[0]
         for index, label in enumerate(labels):
             labelStr = label.extract()
-            valueStr = values[index].css('::text').extract()
-            print labelStr + "------" + str(valueStr)
+            valueStr = values[index].css('::text').extract()[0]
+            print labelStr + "------" + valueStr
             if labelStr == "时间":
                 print "match 时间"
                 ICOTIME = valueStr
