@@ -14,10 +14,7 @@ class MytokenBaseInfoSpider(scrapy.Spider):
     global domain
     domain = start_urls[0]
 
-    global AAA
-
     def parse(self, response):
-        global AAA
         Name = ""
         ICOTIME = ""
         RATE = ""
@@ -30,36 +27,42 @@ class MytokenBaseInfoSpider(scrapy.Spider):
         Type = response.css('div.tag::text')[0].extract()
 
         Desc = response.css('div.desc').css('p::text').extract()
+        print Desc
 
-        labels = response.css('div.label::text')
-        values = response.css('div.value::text')
+        response.css('div.base-container').css('div.value::text')
 
-        # print "------------------------------------------------------------------你好，世界" + labels.extract()
-        # Desc = labels[0].extract()
+        items = response.css('td.item')
+        labels = response.css('td.item div.label::text')
+        values = response.css('td.item div.value')
+
+        print labels[0]
         for index, label in enumerate(labels):
             labelStr = label.extract()
-            valueStr = values.extract()[index]
-            print labelStr + "------" + valueStr
+            valueStr = values[index].css('::text').extract()
+            print labelStr + "------" + str(valueStr)
             if labelStr == "时间":
+                print "match 时间"
                 ICOTIME = valueStr
 
             if labelStr == "兑换比例":
+                print "match 兑换比例"
                 RATE = valueStr
 
             if labelStr == "接受币种":
+                print "match 接受币种"
                 ACCEPT = valueStr
 
             if labelStr == "代币分配":
+                print "match 代币分配"
                 DISTRIBUTION = valueStr
 
             if labelStr == "筹集资金量":
+                print "match 筹集资金量"
                 TOTALCAPITAL = valueStr
-
-        AAA = values.extract()
 
         scraped_info = {
             'Name': Name,
-            'ICOTIME': AAA,
+            'ICOTIME': ICOTIME,
             'RATE': RATE,
             'ACCEPT': ACCEPT,
             'DISTRIBUTION': DISTRIBUTION,
@@ -68,45 +71,3 @@ class MytokenBaseInfoSpider(scrapy.Spider):
         }
 
         yield scraped_info
-
-    # def parse_issues(self, response):
-    #     global Opens
-    #     global Closes
-    #     global domain
-    #
-    #     # Open / Close
-    #     items = response.css('a.btn-link::text').extract()
-    #     Opens = items[1]
-    #     Closes = items[3]
-    #
-    #     issue_page = domain + "/pulse/monthly"
-    #     yield scrapy.Request(url=issue_page, callback=self.parse_insight)
-    #
-    # def parse_insight(self, response):
-    #     global Name
-    #     global Watchs
-    #     global Stars
-    #     global Forks
-    #     global Issues
-    #     global Contributors
-    #     global Opens
-    #     global Closes
-    #
-    #     adds = response.css('strong.insertions::text').extract()
-    #     dels = response.css('strong.deletions::text').extract()
-    #
-    #     # create a dictionary to store the scraped info
-    #     scraped_info = {
-    #         'Name': Name,
-    #         'Watchs': Watchs,
-    #         'Stars': Stars,
-    #         'Forks': Forks,
-    #         'Issues': Issues,
-    #         'Contributors': Contributors,
-    #         'Opens': Opens,
-    #         'Adds': adds,
-    #         'Dels': dels,
-    #
-    #     }
-    #
-    #     yield scraped_info
